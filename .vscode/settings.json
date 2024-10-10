@@ -10,5 +10,6 @@
         "**/LICENSE": true,
         "**/.vscode": true,
         "**/.venv": true,
+        "**/poetry.lock": true,
     },
 }
