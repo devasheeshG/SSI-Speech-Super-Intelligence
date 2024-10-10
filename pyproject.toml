@@ -2,12 +2,19 @@
 name = "ssi"
 version = "0.1.0"
 description = "This project builds upon Whisper and VAD systems to provide plug and play solutions (FastAPI router) that can be easily included in any AI Assistant type project to have Streaming ASR in their application."
-authors = ["Devasheesh Mishra <devasheeshmishra4@gmail.com>", Mayank Sharma <sharmayank@gmail.com>]
+authors = ["Devasheesh Mishra <devasheeshmishra4@gmail.com>", "Mayank Sharma <sharmayank@gmail.com>"]
 license = "MIT License"
 readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
+torch = "^2.4.1"
+numpy = "^2.1.2"
+matplotlib = "^3.9.2"
+torchaudio = "^2.4.1"
+soundfile = "^0.12.1"
+pyaudio = "^0.2.14"
+jupyterplot = "^0.0.3"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.10.0"

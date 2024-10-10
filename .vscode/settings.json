@@ -9,5 +9,6 @@
         "**/.gitignore": true,
         "**/LICENSE": true,
         "**/.vscode": true,
+        "**/.venv": true,
     },
 }
