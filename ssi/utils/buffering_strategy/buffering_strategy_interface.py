@@ -24,7 +24,7 @@ class BufferingStrategyInterface(ABC):
     """
 
     @abstractmethod
-    def process_audio(
+    async def process_audio(
         self, 
         websocket: WebSocket,
         vad_pipeline: VADInterface,

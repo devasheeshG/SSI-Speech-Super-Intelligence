@@ -1,13 +1,23 @@
 # Path: ssi/utils/ws/stream_client.py
 # Description: This module contains the StreamClient class for representing a connected WebSocket client for real-time audio transcription.
 
+import asyncio
+from typing import Callable
 from fastapi import WebSocket
-from ssi.utils.buffering_strategy.buffering_strategy_factory import BufferingStrategyFactory
-from ssi.utils.vad.vad_interface import VADInterface
+import numpy as np
 from ssi.utils.asr.asr_interface import ASRInterface
+from ssi.utils.vad.vad_factory import VADFactory
+from ssi.utils.asr.asr_factory import ASRFactory
 from ssi.config import get_settings
+from ssi.logger import get_logger
+from ssi.utils.vad.vad_interface import VADInterface
 
 settings = get_settings()
+logger = get_logger()
+
+# Initialize VAD and ASR pipelines
+vad_pipeline: VADInterface = VADFactory.create_vad_pipeline(settings.VAD_MODEL)
+asr_pipeline: ASRInterface = ASRFactory.create_asr_pipeline(settings.ASR_MODEL)
 
 class StreamClient:
     """Represents a connected WebSocket client for real-time audio transcription.
@@ -17,49 +27,91 @@ class StreamClient:
         buffer (bytearray): A buffer to store incoming audio data.
     """
 
-    def __init__(self, client_id: str) -> None:
-        self.client_id = client_id
-        self.pre_buffer = bytearray()
-        self.post_buffer = bytearray()
-        self.processing_strategy = 'silence_at_end_of_chunk'
-        self.buffering_strategy = (
-            BufferingStrategyFactory.create_buffering_strategy(
-                type=self.processing_strategy,
-                client=self,
-            )
-        )
+    def __init__(self, client_id: str, callback: Callable) -> None:
+        self.client_id: str = client_id
+        self.callback: Callable = callback
+        self.audio_queue: asyncio.Queue = asyncio.Queue()
+        self.is_running: bool = True
+        
+        # Initialize buffers
+        # NOTE: check if we should use np.int16 or bytearray
+        logger.debug(f"Initializing pre-buffer with {settings.BUFFER_SECONDS_BEFORE} seconds of silence")
+        self.pre_buffer: np.ndarray = np.zeros(int(settings.BUFFER_SECONDS_BEFORE * settings.STREAM_SAMPLE_RATE), dtype=np.int16)
+        
+        logger.debug(f"Initializing post-buffer with {settings.BUFFER_SECONDS_AFTER} seconds of silence")
+        self.post_buffer: np.ndarray = np.zeros(int(settings.BUFFER_SECONDS_AFTER * settings.STREAM_SAMPLE_RATE), dtype=np.int16)
 
-    def append_audio_data(self, audio_data: bytes) -> None:
-        """Append audio data to the buffer.
-
-        Args:
-            audio_data (bytes): The audio data to append to the buffer.
-        """
-        BUFFER_BEFORE_SIZE = int(settings.BUFFER_SECONDS_BEFORE * settings.STREAM_SAMPLE_RATE * settings.STREAM_SAMPLE_WIDTH_BYTES * settings.STREAM_CHANNELS)
-        BUFFER_AFTER_SIZE = int(settings.BUFFER_SECONDS_AFTER * settings.STREAM_SAMPLE_RATE * settings.STREAM_SAMPLE_WIDTH_BYTES * settings.STREAM_CHANNELS)
-        
-        self.post_buffer.extend(audio_data)
-        
-        if len(self.pre_buffer) < BUFFER_BEFORE_SIZE:
-            self.pre_buffer.extend(audio_data)
-        else:
-            self.pre_buffer = self.pre_buffer[len(audio_data):] + audio_data
-        
-        if len(self.post_buffer) > BUFFER_AFTER_SIZE:
-            self.post_buffer = self.post_buffer[-BUFFER_AFTER_SIZE:]
+    async def append_audio_data(self, audio_data: bytes) -> None:
+        # Convert bytes to numpy array and put it in the queue
+        audio_array = np.frombuffer(audio_data, dtype=np.int16)
+        await self.audio_queue.put(audio_array)
     
-    def process_audio(
-        self, 
-        websocket: WebSocket,
-        vad_pipeline: VADInterface,
-        asr_pipeline: ASRInterface,
-    ) -> None:
-        """Process the audio data using the specified VAD and ASR pipelines.
+    async def process_audio(self) -> None:
+        recording_buffer = np.array([], dtype=np.int16)
+        is_recording = False
+        silence_duration = 0
 
-        Args:
-            vad_pipeline: The VAD pipeline to use for voice activity detection.
-            asr_pipeline: The ASR pipeline to use for speech recognition.
-        """
-        self.buffering_strategy.process_audio(
-            websocket, vad_pipeline, asr_pipeline
-        )
+        while self.is_running:
+            audio_chunk = await self.audio_queue.get()
+
+            # Update pre-buffer
+            self.pre_buffer = np.roll(self.pre_buffer, -len(audio_chunk))
+            self.pre_buffer[-len(audio_chunk):] = audio_chunk
+
+            # Detect voice activity
+            voice_prob = vad_pipeline.detect_voice_activity(audio_chunk)
+
+            if voice_prob >= settings.VOICE_ACTIVATION_THRESHOLD:
+                if not is_recording:
+                    logger.info(f"Voice activity detected for client {self.client_id}. Starting recording.")
+                    is_recording = True
+                    recording_buffer = np.concatenate((self.pre_buffer, audio_chunk))
+                else:
+                    recording_buffer = np.concatenate((recording_buffer, audio_chunk))
+                silence_duration = 0
+            elif is_recording:
+                recording_buffer = np.concatenate((recording_buffer, audio_chunk))
+                silence_duration += len(audio_chunk) / settings.STREAM_SAMPLE_RATE
+
+                if silence_duration >= settings.BUFFER_SECONDS_AFTER:
+                    logger.info(f"Silence detected for client {self.client_id}. Stopping recording and transcribing.")
+                    is_recording = False
+
+                    # Prepare the final audio for transcription
+                    final_audio = np.concatenate((recording_buffer, self.post_buffer))
+
+                    # Transcribe the audio
+                    transcription = await asr_pipeline.transcribe(final_audio)
+
+                    # Send the transcription to the client
+                    await self.callback(transcription)
+
+                    logger.info(f"Transcription sent for client {self.client_id}: {transcription}")
+
+                    # Clear the recording buffer
+                    recording_buffer = np.array([], dtype=np.int16)
+                    silence_duration = 0
+            else:
+                # Update post-buffer
+                self.post_buffer = np.roll(self.post_buffer, -len(audio_chunk))
+                self.post_buffer[-len(audio_chunk):] = audio_chunk
+
+    async def receive_audio(self) -> None:
+        try:
+            while self.is_running:
+                data = await self.websocket.receive_bytes()
+                await self.append_audio_data(data)
+        except asyncio.CancelledError:
+            self.is_running = False
+
+    async def run(self) -> None:
+        logger.info(f"Creating tasks for client {self.client_id}")
+        receive_task = asyncio.create_task(self.receive_audio())
+        process_task = asyncio.create_task(self.process_audio())
+        
+        try:
+            await asyncio.gather(receive_task, process_task)
+        finally:
+            self.is_running = False
+            receive_task.cancel()
+            await process_task
