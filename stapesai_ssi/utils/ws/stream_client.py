@@ -5,13 +5,13 @@ import asyncio
 from typing import Callable
 import numpy as np
 from fastapi import WebSocket
-from ssi.utils.asr.asr_interface import ASRInterface
-from ssi.utils.vad.vad_factory import VADFactory
-from ssi.utils.asr.asr_factory import ASRFactory
-from ssi.config import get_settings
-from ssi.logger import get_logger
-from ssi.utils.vad.vad_interface import VADInterface
-from ssi.types.streaming_data_chunk import StreamingDataChunk
+from stapesai_ssi.utils.asr.asr_interface import ASRInterface
+from stapesai_ssi.utils.vad.vad_factory import VADFactory
+from stapesai_ssi.utils.asr.asr_factory import ASRFactory
+from stapesai_ssi.config import get_settings
+from stapesai_ssi.logger import get_logger
+from stapesai_ssi.utils.vad.vad_interface import VADInterface
+from stapesai_ssi.types.streaming_data_chunk import StreamingDataChunk
 
 settings = get_settings()
 logger = get_logger()

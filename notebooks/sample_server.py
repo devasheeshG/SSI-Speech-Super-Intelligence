@@ -5,9 +5,9 @@ import sys
 sys.path.append('..')
 
 from fastapi import FastAPI
-from ssi.fastapi import StreamingWSRouter
-from ssi.types import StreamingDataChunk, NewClientConnected
-from ssi.logger import get_logger
+from stapesai_ssi.fastapi import StreamingWSRouter
+from stapesai_ssi.types import StreamingDataChunk, NewClientConnected
+from stapesai_ssi.logger import get_logger
 
 logger = get_logger()
 
@@ -28,6 +28,6 @@ streaming_ws_router = StreamingWSRouter(
 app.include_router(streaming_ws_router)
 
 # RUN: uvicorn sample_server:app --reload
-# if __name__ == "__main__":
-#     import uvicorn
-#     uvicorn.run(app, host="0.0.0.0", port=8000)
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

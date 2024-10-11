@@ -4,9 +4,9 @@
 from typing import Callable, Dict
 import uuid
 from fastapi import WebSocket, status
-from ssi.utils.ws.stream_client import StreamClient
-from ssi.logger import get_logger
-from ssi.types.streaming_data_chunk import StreamingDataChunk
+from stapesai_ssi.utils.ws.stream_client import StreamClient
+from stapesai_ssi.logger import get_logger
+from stapesai_ssi.types.streaming_data_chunk import StreamingDataChunk
 
 class ConnectionManager:
     def __init__(self, asr_callback: Callable[[StreamingDataChunk], None] = None) -> None:

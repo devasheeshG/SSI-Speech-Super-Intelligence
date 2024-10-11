@@ -31,8 +31,10 @@ def list_microphones():
     return devices
 
 def main():
-    server_ip = input("Enter server IP address (default: 192.168.0.253): ") or "192.168.0.253"
-    server_port = input("Enter server port (default: 8000): ") or 8000
+    # server_ip = input("Enter server IP address (default: 192.168.0.253): ") or "192.168.0.253"
+    # server_port = input("Enter server port (default: 8000): ") or 8000"
+    server_ip = "192.168.0.124"
+    server_port = 8000
     server_url = f"ws://{server_ip}:{server_port}/ws/transcribe"
     # server_url = f"ws://{server_ip}:{server_port}/temp"
 

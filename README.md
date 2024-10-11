@@ -10,8 +10,8 @@ pip install ssi[fastapi]
 
 ```python
 from fastapi import FastAPI
-from ssi.fastapi import StreamingWSRouter
-from ssi.types import StreamingDataChunk, NewClientConnected
+from stapesai_ssi.fastapi import StreamingWSRouter
+from stapesai_ssi.types import StreamingDataChunk, NewClientConnected
 
 app = FastAPI()
 
@@ -39,8 +39,8 @@ pip install ssi[client]
 
 ```python
 from fastapi import FastAPI
-from ssi.clients import StreamingClient
-from ssi.types import StreamingDataChunk
+from stapesai_ssi.clients import StreamingClient
+from stapesai_ssi.types import StreamingDataChunk
 
 app = FastAPI()
 

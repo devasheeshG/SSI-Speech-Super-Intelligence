@@ -1,7 +1,7 @@
 # Path: ssi/utils/asr/whisper_transformers_asr.py
 # Description: This module contains the WhisperTransformersASR class, which is an implementation of the ASRInterface using the Hugging Face Transformers library.
 
-from ssi.utils.asr.asr_interface import ASRInterface
+from stapesai_ssi.utils.asr.asr_interface import ASRInterface
 
 class WhisperTransformersASR(ASRInterface):
     """

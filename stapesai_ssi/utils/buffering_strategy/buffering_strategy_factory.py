@@ -1,7 +1,7 @@
 # Path: ssi/utils/buffering_strategy/buffering_strategy_factory.py
 # Description: This module contains a factory class for creating instances of different buffering strategies.
 
-from ssi.utils.ws.stream_client import StreamClient
+from stapesai_ssi.utils.ws.stream_client import StreamClient
 from .silence_at_end_of_chunk import SilenceAtEndOfChunk
 
 class BufferingStrategyFactory:

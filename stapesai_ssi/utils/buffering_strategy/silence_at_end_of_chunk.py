@@ -2,12 +2,12 @@
 # Description: This module contains the SilenceAtEndOfChunk buffering strategy class. In this strategy, the audio chunks are buffered until a period of silence is detected at the end of the chunk. This is done by using VAD to detect the presence of speech in the audio data.
 
 from fastapi import WebSocket
-from ssi.utils.buffering_strategy.buffering_strategy_interface import BufferingStrategyInterface
-from ssi.utils.vad.vad_interface import VADInterface
-from ssi.utils.asr.asr_interface import ASRInterface
-from ssi.utils.ws.stream_client import StreamClient
-from ssi.config import get_settings
-from ssi.logger import get_logger
+from stapesai_ssi.utils.buffering_strategy.buffering_strategy_interface import BufferingStrategyInterface
+from stapesai_ssi.utils.vad.vad_interface import VADInterface
+from stapesai_ssi.utils.asr.asr_interface import ASRInterface
+from stapesai_ssi.utils.ws.stream_client import StreamClient
+from stapesai_ssi.config import get_settings
+from stapesai_ssi.logger import get_logger
 
 settings = get_settings()
 logger = get_logger()

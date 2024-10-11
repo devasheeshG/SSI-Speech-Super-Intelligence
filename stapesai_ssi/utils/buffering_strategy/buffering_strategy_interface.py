@@ -3,8 +3,8 @@
 
 from abc import ABC, abstractmethod
 from fastapi import WebSocket
-from ssi.utils.vad.vad_interface import VADInterface
-from ssi.utils.asr.asr_interface import ASRInterface
+from stapesai_ssi.utils.vad.vad_interface import VADInterface
+from stapesai_ssi.utils.asr.asr_interface import ASRInterface
 
 class BufferingStrategyInterface(ABC):
     """
