@@ -1,0 +1,22 @@
+repos:
+  # - repo: https://github.com/psf/black
+  #   rev: 23.7.0  # Use the latest stable version of Black
+  #   hooks:
+  #     - id: black
+  #       language_version: python3
+
+  - repo: https://github.com/nbQA-dev/nbQA
+    rev: 1.8.0  # Use the latest stable version of nbQA
+    hooks:
+      - id: nbqa-black  # Format Jupyter Notebooks with Black
+        additional_dependencies: ["black"]
+      - id: nbqa-clean  # Clean notebook outputs and metadata
+        args: ["--clear-output"]
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: end-of-file-fixer  # Ensure files end with a newline
+      - id: trailing-whitespace  # Remove trailing whitespace
+      - id: large_files  # Prevent committing large files
+        args: ["--maxkb=4096"]

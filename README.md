@@ -2,12 +2,15 @@
 
 https://www.codemotion.com/magazine/dev-life/github-project/
 
-usecase 1 - use in existing repos
-all models will be loaded from the existing repo and then the server will be started
+usecase 1 - use in existing reposall models will be loaded from the existing repo and then the server will be started
+
+```bash
+pip install ssi[fastapi]
+```
 
 ```python
 from fastapi import FastAPI
-from ssi.fastapi.routers import StreamingWSRouter
+from ssi.fastapiimport StreamingWSRouter
 from ssi.types import StreamingDataChunk
 
 app = FastAPI()
@@ -24,6 +27,10 @@ app.include_router(streaming_ws_router)
 
 usecase 2 - deploy as a docker server and then use in existing repos
 here SSI server is deployed as a docker container and then ssi_client can be used in existing repos
+
+```bash
+pip install ssi[client]
+```
 
 ```python
 from fastapi import FastAPI

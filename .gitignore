@@ -131,3 +131,4 @@ dmypy.json
 # Custom ignores
 cloned_repos/
 poetry.lock
+prompt.txt
