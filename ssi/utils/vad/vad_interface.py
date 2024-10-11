@@ -1,7 +1,9 @@
 # Path: ssi/utils/vad/vad_interface.py
 # Description: This module contains the interface for the Voice Activity Detection (VAD) strategy used in the real-time audio transcription system. We'll implement the interface for the different VAD strategies in the respective files.
 
+import numpy as np
 from abc import ABC, abstractmethod
+from typing import Union
 
 class VADInterface(ABC):
     """
@@ -16,7 +18,7 @@ class VADInterface(ABC):
     """
     
     @abstractmethod
-    def detect_voice_activity(self, audio_data: bytes) -> int:
+    def detect_voice_activity(self, audio_data: Union[bytes, np.int16]) -> int:
         """ 
         Detects voice activity in the given audio data.
         

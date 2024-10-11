@@ -38,5 +38,7 @@ class VADFactory:
         """
         if type == "silero":
             return SileroVAD()
+        elif type == "pyannote":
+            raise NotImplementedError("Pyannote VAD not implemented yet")
         else:
             raise ValueError(f"Unknown VAD strategy type: {type}")

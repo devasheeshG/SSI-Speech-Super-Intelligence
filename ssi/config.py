@@ -2,6 +2,7 @@
 # Description: This file contains code to load `.env` file and make a pydantic `BaseSettings` class which can be used to access environment variables in the application.
 
 from functools import lru_cache
+from typing import Union
 from pydantic_settings import BaseSettings
 from pydantic import Field, field_validator
 from ssi.utils.whisper_language_codes import WHISPER_LANGUAGE_CODES
@@ -42,7 +43,18 @@ class Settings(BaseSettings):
     )
     
     # VAD
-    VAD_MODEL_DOWNLOAD_DIR: str = Field(
+    VAD_MODEL: str = Field(
+        default="silero",
+        env="VAD_MODEL",
+        description="The Voice Activity Detection (VAD) model to use for detecting voice activity.",
+    )
+    @field_validator("VAD_MODEL")
+    def validate_vad_model(cls, value):
+        if value not in ["silero"]:
+            raise ValueError("Only 'silero' VAD model is supported.")
+        return value
+    
+    VAD_MODEL_DOWNLOAD_DIR: Union[str, None] = Field(
         default=None,
         env="VAD_MODEL_DOWNLOAD_DIR",
         description="The directory to download the VAD model files.",
@@ -54,12 +66,12 @@ class Settings(BaseSettings):
     )
     
     # in the final clip which will be sent to the ASR model, we need to include some audio before and after the detected speech to ensure that the ASR model can transcribe the speech accurately.
-    BUFFER_SECONDS_BEFORE: int = Field(
+    BUFFER_SECONDS_BEFORE: float = Field(
         default=0.5,
         env="BUFFER_SECONDS_BEFORE",
         description="The number of seconds of audio before the detected speech to include in the final clip.",
     )
-    BUFFER_SECONDS_AFTER: int = Field(
+    BUFFER_SECONDS_AFTER: float = Field(
         default=1.0,
         env="BUFFER_SECONDS_AFTER",
         description="The number of seconds of audio after the detected speech to include in the final clip.",
@@ -77,7 +89,7 @@ class Settings(BaseSettings):
             raise ValueError("ASR_MODEL must be 'whisper_transformers''.")
         return value
     
-    ASR_MODEL_DOWNLOAD_DIR: str = Field(
+    ASR_MODEL_DOWNLOAD_DIR: Union[str, None] = Field(
         default=None,
         env="ASR_MODEL_DOWNLOAD_DIR",
         description="The directory to download the ASR model files.",

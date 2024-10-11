@@ -10,16 +10,21 @@ pip install ssi[fastapi]
 
 ```python
 from fastapi import FastAPI
-from ssi.fastapiimport StreamingWSRouter
-from ssi.types import StreamingDataChunk
+from ssi.fastapi import StreamingWSRouter
+from ssi.types import StreamingDataChunk, NewClientConnected
 
 app = FastAPI()
 
-def callback(data: StreamingDataChunk):
+def asr_callback(data: StreamingDataChunk):
+    print(data)
+
+def new_client_callback(data: NewClientConnected):
     print(data)
 
 streaming_ws_router = StreamingWSRouter(
-    callback=callback,
+    asr_callback=asr_callback,
+    new_client_callback=new_client_callback,
+    endpoint="/ws/transcribe"
 )
 
 app.include_router(streaming_ws_router)

@@ -1,6 +1,7 @@
 # Path: ssi/utils/vad/silero_vad.py
 # Description: This module contains the implementation of the Silero VAD strategy for detecting voice activity in audio data.
 
+from typing import Union
 import torch
 import numpy as np
 from .vad_interface import VADInterface
@@ -32,8 +33,9 @@ class SileroVAD(VADInterface):
         sound = sound.squeeze()  # depends on the use case
         return sound
     
-    def detect_voice_activity(self, audio_data: bytes) -> int:
-        audio_data = np.frombuffer(audio_data, dtype=np.int16)
+    def detect_voice_activity(self, audio_data: Union[bytes, np.int16]) -> int:
+        if isinstance(audio_data, bytes):
+            audio_data = np.frombuffer(audio_data, dtype=np.int16)
         audio_data = self._int2float(audio_data)
         audio_tensor = torch.tensor(audio_data)
         return self._get_probs(self.model, audio_tensor, 16_000)
