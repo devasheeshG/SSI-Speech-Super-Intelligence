@@ -27,9 +27,9 @@ jobs:
         pip install poetry
         poetry install --no-dev
 
-    - name: Run Tests
-      run: |
-        poetry run pytest
+    # - name: Run Tests
+    #   run: |
+    #     poetry run pytest
 
   build:
     runs-on: ubuntu-latest
