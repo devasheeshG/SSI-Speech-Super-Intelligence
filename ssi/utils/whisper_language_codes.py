@@ -1,4 +1,4 @@
-language_codes = {
+WHISPER_LANGUAGE_CODES = {
     "afrikaans": "af",
     "amharic": "am",
     "arabic": "ar",
