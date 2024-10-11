@@ -14,10 +14,10 @@ logger = get_logger()
 app = FastAPI()
 
 def asr_callback(data: StreamingDataChunk):
-    print(data)
+    logger.info("Received data chunk: %s", data)
 
 def new_client_callback(data: NewClientConnected):
-    print(data)
+    logger.info("New client connected: %s", data)
 
 streaming_ws_router = StreamingWSRouter(
     asr_callback=asr_callback,

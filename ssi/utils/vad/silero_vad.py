@@ -20,12 +20,12 @@ class SileroVAD(VADInterface):
             force_reload=True
         )
     
-    def _get_probs(model, inputs: torch.Tensor, sample_rate: int):
+    def _get_probs(self, model, inputs: torch.Tensor, sample_rate: int):
         with torch.no_grad():
             outs = model(inputs, sample_rate)
         return outs.item()
 
-    def _int2float(sound):
+    def _int2float(self, sound):
         abs_max = np.abs(sound).max()
         sound = sound.astype('float32')
         if abs_max > 0:

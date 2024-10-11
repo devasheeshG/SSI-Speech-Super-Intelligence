@@ -5,7 +5,7 @@ import pyaudio
 from websockets.sync.client import connect
 from termcolor import colored
 
-CHUNK_SIZE = 1024
+CHUNK_SIZE = 512
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 16000
@@ -34,6 +34,7 @@ def main():
     server_ip = input("Enter server IP address (default: 192.168.0.253): ") or "192.168.0.253"
     server_port = input("Enter server port (default: 8000): ") or 8000
     server_url = f"ws://{server_ip}:{server_port}/ws/transcribe"
+    # server_url = f"ws://{server_ip}:{server_port}/temp"
 
     devices = list_microphones()
     print(colored("Available microphones:", "cyan"))

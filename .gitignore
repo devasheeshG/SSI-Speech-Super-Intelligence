@@ -132,3 +132,4 @@ dmypy.json
 cloned_repos/
 poetry.lock
 prompt.txt
+temp.py

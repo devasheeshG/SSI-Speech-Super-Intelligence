@@ -4,12 +4,14 @@
 import asyncio
 from typing import Callable
 import numpy as np
+from fastapi import WebSocket
 from ssi.utils.asr.asr_interface import ASRInterface
 from ssi.utils.vad.vad_factory import VADFactory
 from ssi.utils.asr.asr_factory import ASRFactory
 from ssi.config import get_settings
 from ssi.logger import get_logger
 from ssi.utils.vad.vad_interface import VADInterface
+from ssi.types.streaming_data_chunk import StreamingDataChunk
 
 settings = get_settings()
 logger = get_logger()
@@ -26,8 +28,9 @@ class StreamClient:
         buffer (bytearray): A buffer to store incoming audio data.
     """
 
-    def __init__(self, client_id: str, asr_callback: Callable) -> None:
+    def __init__(self, client_id: str, websocket: WebSocket, asr_callback: Callable) -> None:
         self.client_id: str = client_id
+        self.websocket: WebSocket = websocket
         self.asr_callback: Callable = asr_callback
         self.audio_queue: asyncio.Queue = asyncio.Queue()
         self.is_running: bool = True
@@ -60,7 +63,7 @@ class StreamClient:
             # Detect voice activity
             voice_prob = vad_pipeline.detect_voice_activity(audio_chunk)
 
-            if voice_prob >= settings.VOICE_ACTIVATION_THRESHOLD:
+            if voice_prob >= settings.VAD_THRESHOLD:
                 if not is_recording:
                     logger.info(f"Voice activity detected for client {self.client_id}. Starting recording.")
                     is_recording = True
@@ -80,10 +83,14 @@ class StreamClient:
                     final_audio = np.concatenate((recording_buffer, self.post_buffer))
 
                     # Transcribe the audio
-                    transcription = await asr_pipeline.transcribe(final_audio)
+                    transcription = asr_pipeline.transcribe(final_audio)
 
                     # Send the transcription to the client
-                    await self.asr_callback(transcription)
+                    self.asr_callback(StreamingDataChunk(
+                        language="en",  # Assuming English, you might want to make this configurable
+                        transcription=transcription,
+                        server_process_time=0.0  # You might want to add timing logic here
+                    ))
                     logger.info(f"Transcription sent for client {self.client_id}: {transcription}")
 
                     # Clear the recording buffer
@@ -101,6 +108,9 @@ class StreamClient:
                 await self.append_audio_data(data)
         except asyncio.CancelledError:
             self.is_running = False
+        except Exception as e:
+            logger.error(f"Error receiving audio for client {self.client_id}: {e}")
+            self.is_running = False
 
     async def run(self) -> None:
         logger.info(f"Creating tasks for client {self.client_id}")
@@ -109,7 +119,12 @@ class StreamClient:
         
         try:
             await asyncio.gather(receive_task, process_task)
+        except Exception as e:
+            import traceback
+            logger.error(traceback.format_exc())
+            logger.error(f"Error in run() for client {self.client_id}: {e}")
         finally:
             self.is_running = False
             receive_task.cancel()
-            await process_task
+            process_task.cancel()
+            logger.info(f"Tasks cancelled for client {self.client_id}")

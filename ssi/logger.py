@@ -8,7 +8,7 @@ from colorlog import ColoredFormatter
 
 
 @lru_cache
-def get_logger():
+def get_logger(level: int = logging.DEBUG) -> logging.Logger:
     """
     Get a logger instance with colored console output and file logging.
 
@@ -16,7 +16,7 @@ def get_logger():
         logging.Logger: Configured logger instance
     """
     logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(level)
 
     # Logging configuration
     # TODO: move this configuration to a separate file (logging.ini)
