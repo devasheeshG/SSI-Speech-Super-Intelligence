@@ -3,7 +3,6 @@
 
 import asyncio
 from typing import Callable
-from fastapi import WebSocket
 import numpy as np
 from ssi.utils.asr.asr_interface import ASRInterface
 from ssi.utils.vad.vad_factory import VADFactory
@@ -27,9 +26,9 @@ class StreamClient:
         buffer (bytearray): A buffer to store incoming audio data.
     """
 
-    def __init__(self, client_id: str, callback: Callable) -> None:
+    def __init__(self, client_id: str, asr_callback: Callable) -> None:
         self.client_id: str = client_id
-        self.callback: Callable = callback
+        self.asr_callback: Callable = asr_callback
         self.audio_queue: asyncio.Queue = asyncio.Queue()
         self.is_running: bool = True
         
@@ -84,8 +83,7 @@ class StreamClient:
                     transcription = await asr_pipeline.transcribe(final_audio)
 
                     # Send the transcription to the client
-                    await self.callback(transcription)
-
+                    await self.asr_callback(transcription)
                     logger.info(f"Transcription sent for client {self.client_id}: {transcription}")
 
                     # Clear the recording buffer
