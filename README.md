@@ -58,3 +58,8 @@ app.include_router(ssi_client.fastapi_proxy_router)
 
 usecase 3 - CLI (for local system as well as simple socket server)
 bc dimak nhi chal rha abhi
+
+
+python setup.py sdist bdist_wheel
+
+twine upload dist/* --verbose

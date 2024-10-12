@@ -5,20 +5,14 @@ import asyncio
 from typing import Callable
 import numpy as np
 from fastapi import WebSocket
-from stapesai_ssi.utils.asr.asr_interface import ASRInterface
-from stapesai_ssi.utils.vad.vad_factory import VADFactory
-from stapesai_ssi.utils.asr.asr_factory import ASRFactory
-from stapesai_ssi.config import get_settings
-from stapesai_ssi.logger import get_logger
-from stapesai_ssi.utils.vad.vad_interface import VADInterface
-from stapesai_ssi.types.streaming_data_chunk import StreamingDataChunk
+from ssi.config import get_settings
+from ssi.logger import get_logger
+from ssi.utils.asr.asr_interface import ASRInterface
+from ssi.utils.vad.vad_interface import VADInterface
+from ssi.types.streaming_data_chunk import StreamingDataChunk
 
 settings = get_settings()
 logger = get_logger()
-
-# Initialize VAD and ASR pipelines
-vad_pipeline: VADInterface = VADFactory.create_vad_pipeline(settings.VAD_MODEL)
-asr_pipeline: ASRInterface = ASRFactory.create_asr_pipeline(settings.ASR_MODEL)
 
 class StreamClient:
     """Represents a connected WebSocket client for real-time audio transcription.
@@ -28,12 +22,21 @@ class StreamClient:
         buffer (bytearray): A buffer to store incoming audio data.
     """
 
-    def __init__(self, client_id: str, websocket: WebSocket, asr_callback: Callable) -> None:
+    def __init__(
+        self, 
+        client_id: str, 
+        websocket: WebSocket, 
+        asr_callback: Callable, 
+        vad_pipeline: VADInterface, 
+        asr_pipeline: ASRInterface
+    ) -> None:
         self.client_id: str = client_id
         self.websocket: WebSocket = websocket
         self.asr_callback: Callable = asr_callback
         self.audio_queue: asyncio.Queue = asyncio.Queue()
         self.is_running: bool = True
+        self.vad_pipeline: VADInterface = vad_pipeline
+        self.asr_pipeline: ASRInterface = asr_pipeline
         
         # Initialize buffers
         # NOTE: check if we should use np.int16 or bytearray
@@ -61,7 +64,7 @@ class StreamClient:
             self.pre_buffer[-len(audio_chunk):] = audio_chunk
 
             # Detect voice activity
-            voice_prob = vad_pipeline.detect_voice_activity(audio_chunk)
+            voice_prob = self.vad_pipeline.detect_voice_activity(audio_chunk)
 
             if voice_prob >= settings.VAD_THRESHOLD:
                 if not is_recording:
@@ -83,7 +86,7 @@ class StreamClient:
                     final_audio = np.concatenate((recording_buffer, self.post_buffer))
 
                     # Transcribe the audio
-                    transcription = asr_pipeline.transcribe(final_audio)
+                    transcription = self.asr_pipeline.transcribe(final_audio)
 
                     # Send the transcription to the client
                     self.asr_callback(StreamingDataChunk(

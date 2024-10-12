@@ -1,7 +1,7 @@
 # Path: ssi/utils/asr/asr_factory.py
 # Description: This file will contain the factory class for the ASR models. We'll use this factory to create instances of different ASR models.
 
-from .whisper_transformers_asr import WhisperTransformersASR
+from ssi.utils.asr.whisper_transformers_asr import WhisperTransformersASR
 
 class ASRFactory:
     """
@@ -10,11 +10,11 @@ class ASRFactory:
     This factory provides a centralized way to instantiate various ASR
     models based on the type specified. It abstracts the creation logic,
     making it easier to manage and extend with new ASR model types.
-    
+
     Methods:
         create_asr_pipeline: Creates and returns an instance of a specified ASR model.
     """
-    
+
     @staticmethod
     def create_asr_pipeline(type: str):
         """

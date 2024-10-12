@@ -5,7 +5,7 @@ from functools import lru_cache
 from typing import Union
 from pydantic_settings import BaseSettings
 from pydantic import Field, field_validator
-from stapesai_ssi.utils.whisper_language_codes import WHISPER_LANGUAGE_CODES
+from ssi.utils.whisper_language_codes import WHISPER_LANGUAGE_CODES
 
 class Settings(BaseSettings):
     LOG_LEVEL: str = Field(

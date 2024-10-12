@@ -5,9 +5,9 @@ import sys
 sys.path.append('..')
 
 from fastapi import FastAPI
-from stapesai_ssi.fastapi import StreamingWSRouter
-from stapesai_ssi.types import StreamingDataChunk, NewClientConnected
-from stapesai_ssi.logger import get_logger
+from ssi.fastapi import StreamingWSRouter
+from ssi.types import StreamingDataChunk, NewClientConnected
+from ssi.logger import get_logger
 
 logger = get_logger()
 

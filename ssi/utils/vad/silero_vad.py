@@ -5,7 +5,7 @@ from typing import Union
 import torch
 import numpy as np
 from .vad_interface import VADInterface
-from stapesai_ssi.config import get_settings
+from ssi.config import get_settings
 
 settings = get_settings()
 

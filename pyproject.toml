@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "stapesai-ssi"
-version = "0.0.1"
+version = "0.0.2"
 description = "This project builds upon Whisper and VAD systems to provide plug and play solutions (FastAPI router) that can be easily included in any AI Assistant type project to have Streaming ASR in their application."
 authors = ["Devasheesh Mishra <devasheeshmishra4@gmail.com>", "Mayank Sharma <sharmayank1608@gmail.com>"]
 license = "MIT License"
@@ -36,6 +36,7 @@ ipywidgets = "^8.1.5"
 soundfile = "^0.12.1"
 ipython = "^8.28.0"
 huggingface-hub = "^0.25.2"
+toml = "^0.10.2"
 
 [build-system]
 requires = ["poetry-core"]

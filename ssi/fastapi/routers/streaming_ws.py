@@ -5,11 +5,11 @@ import logging
 from fastapi import APIRouter, WebSocket
 from fastapi.websockets import WebSocketDisconnect
 from typing import Callable
-from stapesai_ssi.utils.ws.connection_manager import ConnectionManager
-from stapesai_ssi.utils.ws.stream_client import StreamClient
-from stapesai_ssi.logger import get_logger
-from stapesai_ssi.types.streaming_data_chunk import StreamingDataChunk
-from stapesai_ssi.types.new_client_connected import NewClientConnected
+from ssi.utils.ws.connection_manager import ConnectionManager
+from ssi.utils.ws.stream_client import StreamClient
+from ssi.logger import get_logger
+from ssi.types.streaming_data_chunk import StreamingDataChunk
+from ssi.types.new_client_connected import NewClientConnected
 
 class StreamingWSRouter(APIRouter):
     def __init__(
