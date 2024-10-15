@@ -20,6 +20,10 @@ def get_dev_dependencies(data):
     dev_dependencies = data["tool"]["poetry"]["group"]["dev"]["dependencies"]
     return [f"{pkg}=={ver.replace('^', '')}" for pkg, ver in dev_dependencies.items()]
 
+def get_cli_dependencies(data):
+    cli_dependencies = data["tool"]["poetry"]["group"]["cli"]["dependencies"]
+    return [f"{pkg}=={ver.replace('^', '')}" for pkg, ver in cli_dependencies.items()]
+
 # Read the poetry file
 poetry_data = read_poetry_file()
 
@@ -30,11 +34,13 @@ setup(
     version=poetry_data["tool"]["poetry"]["version"],
     description=poetry_data["tool"]["poetry"]["description"],
     author=", ".join(poetry_data["tool"]["poetry"]["authors"]),
+    readme=poetry_data["tool"]["poetry"]["readme"],
     license=poetry_data["tool"]["poetry"]["license"],
     packages=find_packages(),
     install_requires=get_dependencies(poetry_data),
     extras_require={
         "dev": get_dev_dependencies(poetry_data),
+        "cli": get_cli_dependencies(poetry_data),
     },
     include_package_data=True,
     classifiers=[
@@ -42,5 +48,10 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+    entry_points={
+        "console_scripts": [
+            "ssi=ssi.__main__:main",
+        ],
+    },
     python_requires=">=3.9",
 )

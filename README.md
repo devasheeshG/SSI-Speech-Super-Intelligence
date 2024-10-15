@@ -1,11 +1,12 @@
-@mayank https://www.markepear.com/blog/github-search-engine-optimization
-
-https://www.codemotion.com/magazine/dev-life/github-project/
+# SSI (Speech Super Intelligence)
+<!-- @mayank https://www.markepear.com/blog/github-search-engine-optimization
+https://www.codemotion.com/magazine/dev-life/github-project/ -->
+![SSI Demo Video](https://placehold.co/600x400?text=@shar-mayank+bhai+demo+video+:please-emoji:)
 
 usecase 1 - use in existing reposall models will be loaded from the existing repo and then the server will be started
 
 ```bash
-pip install ssi[fastapi]
+pip install ssi
 ```
 
 ```python

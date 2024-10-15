@@ -40,6 +40,10 @@ toml = "^0.10.2"
 transformers = "^4.45.2"
 torchsummary = "^1.5.1"
 
+[tool.poetry.group.client.dependencies]
+fastapi = "^0.115.0"
+pydantic = "^2.9.2"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
