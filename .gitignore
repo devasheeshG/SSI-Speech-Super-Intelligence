@@ -132,4 +132,7 @@ dmypy.json
 cloned_repos/
 poetry.lock
 prompt.txt
-temp.py
+test.py
+test.ipynb
+
+training/experiments/whisper/models

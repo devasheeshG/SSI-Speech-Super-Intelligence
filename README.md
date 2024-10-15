@@ -44,13 +44,17 @@ from stapesai_ssi.types import StreamingDataChunk
 
 app = FastAPI()
 
-def callback(data: StreamingDataChunk):
+def asr_callback(data: StreamingDataChunk):
+    print(data)
+
+def new_client_callback(data: NewClientConnected):
     print(data)
 
 ssi_client = StreamingClient(
     server_host="localhost",
     server_port=8000,
-    callback=callback,
+    asr_callback=asr_callback,
+    new_client_callback=new_client_callback,
 )
 
 app.include_router(ssi_client.fastapi_proxy_router)
@@ -58,7 +62,6 @@ app.include_router(ssi_client.fastapi_proxy_router)
 
 usecase 3 - CLI (for local system as well as simple socket server)
 bc dimak nhi chal rha abhi
-
 
 python setup.py sdist bdist_wheel
 

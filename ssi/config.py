@@ -89,11 +89,18 @@ class Settings(BaseSettings):
             raise ValueError("ASR_MODEL must be 'whisper_transformers''.")
         return value
     
+    ASR_MODEL_NAME: str = Field(
+        default="openai/whisper-medium",
+        env="ASR_MODEL_NAME",
+        description="The name of the ASR model to use for speech recognition.",
+    )
+    
     ASR_MODEL_DOWNLOAD_DIR: Union[str, None] = Field(
         default=None,
         env="ASR_MODEL_DOWNLOAD_DIR",
         description="The directory to download the ASR model files.",
     )
+    
     ASR_TARGET_LANG: str = Field(
         default="english",
         env="ASR_TARGET_LANG",

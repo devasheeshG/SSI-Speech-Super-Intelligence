@@ -17,7 +17,7 @@ class ASRInterface(ABC):
     """
     
     @abstractmethod
-    def transcribe(self, audio: bytearray) -> str:
+    def transcribe(self, audio: np.ndarray) -> str:
         """
         Transcribe the given audio data.
         """

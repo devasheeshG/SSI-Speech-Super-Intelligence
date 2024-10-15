@@ -12,5 +12,7 @@
         "**/.venv": true,
         "**/poetry.lock": true,
         "**/__pycache__": true,
+        "build": true,
+        "dist": true,
     },
 }

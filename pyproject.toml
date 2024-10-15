@@ -9,7 +9,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 torch = "^2.4.1"
-numpy = "^2.1.2"
+numpy = "^2.0.0"
 pydantic = "^2.9.2"
 pydantic-settings = "^2.5.2"
 fastapi = "^0.115.0"
@@ -37,6 +37,8 @@ soundfile = "^0.12.1"
 ipython = "^8.28.0"
 huggingface-hub = "^0.25.2"
 toml = "^0.10.2"
+transformers = "^4.45.2"
+torchsummary = "^1.5.1"
 
 [build-system]
 requires = ["poetry-core"]
