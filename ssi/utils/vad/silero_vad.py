@@ -25,7 +25,7 @@ class SileroVAD(VADInterface):
             outs = model(inputs, sample_rate)
         return outs.item()
 
-    def _int2float(self, sound):
+    def _int2float(self, sound: np.ndarray) -> np.ndarray:
         abs_max = np.abs(sound).max()
         sound = sound.astype('float32')
         if abs_max > 0:
